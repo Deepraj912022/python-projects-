@@ -1,0 +1,35 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+# Load the built-in diamonds dataset from seaborn
+diamonds = sns.load_dataset('diamonds')
+
+# Alternatively, load from a CSV file:
+# diamonds = pd.read_csv('diamonds.csv')
+print(diamonds.head())  # First 5 rows
+print(diamonds.info())  # Column types and missing values
+print(diamonds.describe())  # Summary statistics
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='carat', y='price', data=diamonds, alpha=0.3)
+plt.title('Carat vs Price')
+plt.show()
+cut_counts = diamonds['cut'].value_counts()
+print(cut_counts)
+plt.figure(figsize=(10, 6))
+sns.countplot(x='cut', data=diamonds, order=cut_counts.index)
+plt.title('Diamond Cut Quality Distribution')
+plt.show()
+# Pivot table for average price by color and clarity
+pivot_table = diamonds.pivot_table(index='color', columns='clarity', values='price', aggfunc='mean')
+plt.figure(figsize=(12, 8))
+sns.heatmap(pivot_table, annot=True, fmt=".0f", cmap='coolwarm')
+plt.title('Average Price by Color and Clarity')
+plt.show()
+corr = diamonds.corr(numeric_only=True)
+plt.figure(figsize=(10, 6))
+sns.heatmap(corr, annot=True, cmap='coolwarm')
+plt.title('Correlation Matrix')
+plt.show()
+sns.lmplot(x='carat', y='price', data=diamonds.sample(1000), line_kws={'color': 'red'})
+plt.title('Linear Regression: Carat vs Price')
+plt.show()
