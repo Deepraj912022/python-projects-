@@ -1,0 +1,52 @@
+#python compiler
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
+
+# 1. Database Setup
+DATABASE_URL = "sqlite:///./expenses.db" # Using SQLite for simplicity
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(bind=engine)
+Base = declarative_base()
+
+# 2. Models
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True)
+
+class Expense(Base):
+    __tablename__ = "expenses"
+    id = Column(Integer, primary_key=True)
+    amount = Column(Float)
+    category = Column(String)
+    user_id = Column(Integer, ForeignKey("users.id"))
+
+Base.metadata.create_all(bind=engine)
+
+# 3. App & Logic
+app = FastAPI()
+
+def get_db():
+    db = SessionLocal()
+    try: yield db
+    finally: db.close()
+
+@app.post("/users/")
+def create_user(username: str, db: Session = Depends(get_db)):
+    user = User(username=username)
+    db.add(user)
+    db.commit()
+    return {"message": f"User {username} created"}
+
+@app.post("/expenses/{user_id}")
+def add_expense(user_id: int, amount: float, category: str, db: Session = Depends(get_db)):
+    expense = Expense(amount=amount, category=category, user_id=user_id)
+    db.add(expense)
+    db.commit()
+    return {"status": "success", "amount": amount}
+
+@app.get("/expenses/{user_id}")
+def get_expenses(user_id: int, db: Session = Depends(get_db)):
+    return db.query(Expense).filter(Expense.user_id == user_id).all()
