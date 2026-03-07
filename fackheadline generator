@@ -1,0 +1,37 @@
+import random
+subjects ={
+    "Sharukh Khan"
+    "Virat Kholi"
+    "Nirmala Sitaraman"
+    "A Munbai Cat "
+    "A group of monkey"
+    "Prime Minister Modi"
+    "Auto rickshaw Driver  from Delhi"
+}
+action = {
+    "launches"
+    "cancles"
+    "dances  with"
+    "eats"
+    "declars a war on "
+    "orders"
+    "celebrations "
+}
+places_or_things =[
+    "At red fort "
+    "in Mumbai  Local train "
+    "a plote of somasa"
+    "inside the parliament "
+    "during IPL Match "
+    "at India Gate"
+]
+while True:
+    subject =random.choices(subjects)
+    action =random.choices(action)
+    place_or_thing =random.choices(places_or_things)
+    headline = f"BREAKING NEWS: {subject} {action} {place_or_thing}"
+    print("\n"+headline)
+    user_input = input ("\n Do you want another headline (yes/no)").strip().swapcase
+    if user_input == "NO":
+        break
+   
